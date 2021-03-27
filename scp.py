@@ -3,10 +3,10 @@ from cplex.exceptions import CplexError
 import os
 
 def list_int(line: str) -> list:
-  list_line = line.split(" ")
+  numbers = line.split(" ")
   values = []
 
-  for number in list_line:
+  for number in numbers:
     try:
       values.append(int(number))
     except ValueError:
@@ -21,14 +21,14 @@ def get_data(path: str, mode: str) -> (list, list):
     costs = []
     restrictions = []
 
-    while costs.__len__() != columns:
+    while len(costs) != columns:
       costs += list_int(file.readline())
 
     for _ in range(rows):
       length = list_int(file.readline()).pop()
       restriction = []
 
-      while restriction.__len__() != length:
+      while len(restriction) != length:
         restriction += list_int(file.readline())
       
       restrictions.append(restriction)
@@ -36,40 +36,26 @@ def get_data(path: str, mode: str) -> (list, list):
     return restrictions, costs
 
 
-path = "./scpa1.txt"
-mode = "r"
+restrictions, objective = get_data("./scp41.txt", "r")
 
-problem = Cplex()
-
-problem.objective.set_sense(problem.objective.sense.minimize)
-
-restrictions, objective = get_data(path, mode)
+col_number = len(objective)
+row_number = len(restrictions)
 
 constraints_matrix = []
 
 for restriction in restrictions:
   constraint = []
-  for i in range(1, objective.__len__()+1):
+  for i in range(1, col_number + 1):
     constraint.append(1 if i in restriction else 0)
   
   constraints_matrix.append(constraint)
 
-objective = list(map(float, objective))  
-
-col_names = []
-row_names = []
-rhs = []
-types = []
-senses = []
-
-for i in range(1, objective.__len__()+1):
-  col_names.append(f"x{i}")
-  types.append("I")
-
-for i in range(1, restrictions.__len__()+1):
-  row_names.append(f"c{i}")
-  senses.append("G")
-  rhs.append(1.0)
+objective = [float(i) for i in objective]  
+col_names = [f"x{i}" for i in range(1, col_number + 1)]
+row_names = [f"c{i}" for i in range(1, row_number + 1)]
+rhs = [1.0] * row_number
+types = ["I"] * col_number
+senses = ["G"] * row_number
 
 constraints = []
 
@@ -78,6 +64,10 @@ for i in constraints_matrix:
   new_item.append(i)
   constraints.append(new_item)
 
+
+problem = Cplex()
+
+problem.objective.set_sense(problem.objective.sense.minimize)
 
 problem.variables.add(
   obj = objective,
