@@ -36,7 +36,7 @@ def get_data(path: str, mode: str) -> (list, list):
     return restrictions, costs
 
 
-restrictions, objective = get_data("./data/scp41.txt", "r")
+restrictions, objective = get_data("./data/scpe/scpe5.txt", "r")
 
 col_number = len(objective)
 row_number = len(restrictions)
