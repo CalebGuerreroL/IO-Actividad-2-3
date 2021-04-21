@@ -1,3 +1,6 @@
+# 1845935 - Angel Caleb Guerrero Luna
+# 1844214 - Mario Eduardo Lara Loredo
+
 from cplex import Cplex, infinity
 from cplex.exceptions import CplexError
 import os
@@ -36,7 +39,9 @@ def get_data(path: str, mode: str) -> (list, list):
     return restrictions, costs
 
 
-restrictions, objective = get_data("./data/scpe/scpe5.txt", "r")
+# ubicación del problema a resolver
+path = "./data/scpe/scpe5.txt"
+restrictions, objective = get_data(path, "r")
 
 col_number = len(objective)
 row_number = len(restrictions)
